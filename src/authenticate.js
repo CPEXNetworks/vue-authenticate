@@ -206,6 +206,9 @@ export default class VueAuthenticate {
         return reject(new Error('Unknown provider'))
       }
 
+      console.log('Authenticate provider config:')
+      console.log(providerConfig)
+
       let providerInstance;
       switch (providerConfig.oauthType) {
         case '1.0':
@@ -220,6 +223,10 @@ export default class VueAuthenticate {
       }
 
       return providerInstance.init(userData).then((response) => {
+        console.log('inside providerinstance init.  user data:')
+        console.log(userData)
+        console.log('response:')
+        console.log(response)
         this.setToken(response)
 
         if (this.isAuthenticated()) {

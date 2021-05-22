@@ -46,6 +46,10 @@ export default class OAuth2 {
 
     let url = [this.providerConfig.authorizationEndpoint, this._stringifyRequestParams()].join('?')
 
+    console.log(`OAuth2 init URL: ${url}`)
+    console.log('OAuth2 provider config:')
+    console.log(this.providerConfig)
+
     this.oauthPopup = new OAuthPopup(url, this.providerConfig.name, this.providerConfig.popupOptions)
     
     return new Promise((resolve, reject) => {
@@ -77,6 +81,8 @@ export default class OAuth2 {
   exchangeForToken(oauth, userData) {
     let payload = objectExtend({}, userData)
 
+    console.log('exchange for token called')
+
     for (let key in defaultProviderConfig.responseParams) {
       let value = defaultProviderConfig[key]
 
@@ -95,6 +101,9 @@ export default class OAuth2 {
       }
     }
 
+    console.log('exchange for token payload:')
+    console.log(payload)
+
     if (oauth.state) {
       payload.state = oauth.state
     }
@@ -105,6 +114,8 @@ export default class OAuth2 {
     } else {
       exchangeTokenUrl = this.providerConfig.url
     }
+
+    console.log(`exchange token URL: ${exchangeTokenUrl}`)
 
     return this.$http.post(exchangeTokenUrl, payload, {
       withCredentials: this.options.withCredentials

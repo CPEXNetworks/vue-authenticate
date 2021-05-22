@@ -917,8 +917,10 @@ var OAuthPopup = function OAuthPopup(url, name, popupOptions) {
 };
 
 OAuthPopup.prototype.open = function open (redirectUri, skipPooling) {
+  console.log('Popup open called');
   try {
     if(isIosInAppBrowser() || isFacebookOwnedInAppBrowser() || isPlayrggApp()) {
+      console.log('IS locked down browser');
       if(isLockedDownInAppBrowser() && isInIframe() && !isPlayrggApp()) {
         // Some in-app browsers block window.location to different URLs when in an iframe
         // For some reason, it doesn't block window.open
@@ -927,6 +929,7 @@ OAuthPopup.prototype.open = function open (redirectUri, skipPooling) {
         window.location = this.url;
       }
     } else {
+      console.log('IS NOT locked down browser');
       this.popup = window.open(this.url, this.name, this._stringifyOptions());
     }
 
@@ -981,7 +984,8 @@ OAuthPopup.prototype.pooling = function pooling (redirectUri) {
           clearInterval(poolingInterval);
           poolingInterval = null;
             
-          this$1.popup.close();
+          console.log('popup close would be called here');
+          // this.popup.close()
         }
       } catch(e) {
         // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
@@ -1163,6 +1167,10 @@ OAuth2.prototype.init = function init (userData) {
 
   var url = [this.providerConfig.authorizationEndpoint, this._stringifyRequestParams()].join('?');
 
+  console.log(("OAuth2 init URL: " + url));
+  console.log('OAuth2 provider config:');
+  console.log(this.providerConfig);
+
   this.oauthPopup = new OAuthPopup(url, this.providerConfig.name, this.providerConfig.popupOptions);
     
   return new Promise(function (resolve, reject) {
@@ -1196,6 +1204,8 @@ OAuth2.prototype.exchangeForToken = function exchangeForToken (oauth, userData) 
 
   var payload = objectExtend({}, userData);
 
+  console.log('exchange for token called');
+
   for (var key in defaultProviderConfig$1.responseParams) {
     var value = defaultProviderConfig$1[key];
 
@@ -1214,6 +1224,9 @@ OAuth2.prototype.exchangeForToken = function exchangeForToken (oauth, userData) 
     }
   }
 
+  console.log('exchange for token payload:');
+  console.log(payload);
+
   if (oauth.state) {
     payload.state = oauth.state;
   }
@@ -1224,6 +1237,8 @@ OAuth2.prototype.exchangeForToken = function exchangeForToken (oauth, userData) 
   } else {
     exchangeTokenUrl = this.providerConfig.url;
   }
+
+  console.log(("exchange token URL: " + exchangeTokenUrl));
 
   return this.$http.post(exchangeTokenUrl, payload, {
     withCredentials: this.options.withCredentials
@@ -1481,6 +1496,9 @@ VueAuthenticate.prototype.authenticate = function authenticate (provider, userDa
       return reject(new Error('Unknown provider'))
     }
 
+    console.log('Authenticate provider config:');
+    console.log(providerConfig);
+
     var providerInstance;
     switch (providerConfig.oauthType) {
       case '1.0':
@@ -1495,6 +1513,10 @@ VueAuthenticate.prototype.authenticate = function authenticate (provider, userDa
     }
 
     return providerInstance.init(userData).then(function (response) {
+      console.log('inside providerinstance init.  user data:');
+      console.log(userData);
+      console.log('response:');
+      console.log(response);
       this$1.setToken(response);
 
       if (this$1.isAuthenticated()) {

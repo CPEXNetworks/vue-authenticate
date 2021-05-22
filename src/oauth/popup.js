@@ -27,8 +27,10 @@ export default class OAuthPopup {
   }
 
   open(redirectUri, skipPooling) {
+    console.log('Popup open called')
     try {
       if(isIosInAppBrowser() || isFacebookOwnedInAppBrowser() || isPlayrggApp()) {
+        console.log('IS locked down browser')
         if(isLockedDownInAppBrowser() && isInIframe() && !isPlayrggApp()) {
           // Some in-app browsers block window.location to different URLs when in an iframe
           // For some reason, it doesn't block window.open
@@ -37,6 +39,7 @@ export default class OAuthPopup {
           window.location = this.url
         }
       } else {
+        console.log('IS NOT locked down browser')
         this.popup = window.open(this.url, this.name, this._stringifyOptions())
       }
 
@@ -89,7 +92,8 @@ export default class OAuthPopup {
             clearInterval(poolingInterval)
             poolingInterval = null
             
-            this.popup.close()
+            console.log('popup close would be called here')
+            // this.popup.close()
           }
         } catch(e) {
           // Ignore DOMException: Blocked a frame with origin from accessing a cross-origin frame.
